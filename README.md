@@ -10,7 +10,7 @@
  - progress.bar
 
 ## Install :
-`python3 -m pip install argparse mysql-connector-python requests bs4 progress`
+`$ python3 -m pip install argparse mysql-connector-python requests bs4 progress`
 
 ## Start
 
