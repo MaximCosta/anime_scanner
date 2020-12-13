@@ -100,7 +100,7 @@ def db_upload_anime(itm, bar):
     bar.next()
 
     if len(episode) != get_all_episode(itm["name"], itm["saison"]):
-        print("passed : ", itm["name"])
+        # print("passed : ", itm["name"])
         desc = soup.find("div", {"class": "slide-desc"}).text
         anime = get_anime_by_name(itm["name"], itm["saison"])
 
