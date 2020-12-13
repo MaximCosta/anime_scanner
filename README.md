@@ -14,8 +14,8 @@
 
 ## Start
 
-    $ python3 main.py -n 1 # scan page one
-    $ python3 main.py -n 1 -f # scan page one and force update in data base
+    $ python3 main.py -n 1 # Scan first
+    $ python3 main.py -n 1 -f # Scan first page and force update data base
     $ python3 main.py -n 24 # Scans the first page to twenty-fourth page
     $ python3 main.py -n 1 -a # Scans the first page every hours
     $ python3 main.py -n 1 -a -t 2 # Scans the first page every 2 hours
