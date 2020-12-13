@@ -37,3 +37,8 @@
 		  -o output, --output output      The output file of the page that will be analyzed, if it is not specified, the output will be on the command line
 		  -a, --alwaysup        run prgram, every hours
 		  -t time, --time time  every X hours program run
+
+
+## Database
+![Database structure](https://i.ibb.co/nPQnM1w/Capture-d-cran-2020-12-13-165241.png)
+
