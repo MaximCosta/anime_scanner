@@ -9,14 +9,7 @@ from progress.bar import ChargingBar, IncrementalBar
 
 import vostree
 
-mydb = mysql.connector.connect(
-    host="<HOST>",
-    port=<PORT>,
-    user="<USER>",
-    password="<USER_PWD>",
-    database="<SCHEMA>"
-)
-cursor = mydb.cursor()
+
 
 
 def escape_column_name(name):
@@ -208,6 +201,15 @@ if __name__ == '__main__':
         print("vostree_scrap_new: error: the following arguments are required: -n/--nbpage or -p/--page")
         exit()
 
+    mydb = mysql.connector.connect(
+        host="<HOST>",
+        port=<PORT>,
+        user="<USER>",
+        password="<USER_PWD>",
+        database="<SCHEMA>"
+    )
+    mydb = mysql.connector.connect(
+
     while True:
         print(f"pages that will be analyzed: {nb_page}")
         if args.force:
@@ -266,7 +268,7 @@ if __name__ == '__main__':
             if always:
                 print("\n")
                 with IncrementalBar('Next scan : ', max=hour*60) as bar:
-                    for i in range(20):
+                    for i in range(hour*60):
                         # Do some work
                         bar.next()
                         time.sleep(60)
