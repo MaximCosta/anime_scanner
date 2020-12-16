@@ -1,16 +1,34 @@
-import argparse
+import os
 import json
 import time
-
-import mysql.connector
+import argparse
 import requests
+import mysql.connector
+
+
 from bs4 import BeautifulSoup
 from progress.bar import ChargingBar, IncrementalBar
 
 import vostree
 
 
+def clear():
+    if os.name == "nt":
+        os.system('cls')
+    else:
+        os.system("clear")
 
+def zero_or_not(x):
+    if len(x) == 1:
+        return f"0{x}"
+    return x
+
+def sec_to_hours(seconds):
+    a=str(seconds//3600)
+    b=str((seconds%3600)//60)
+    c=str((seconds%3600)%60)
+    d=["{} hours {} mins {} seconds".format(zero_or_not(a), zero_or_not(b), zero_or_not(c))]
+    return d
 
 def escape_column_name(name):
     return name.rstrip().lstrip().strip().replace("'", '"')
@@ -90,7 +108,7 @@ def lecteur_update(lecteur_f):
     return get_lecteur()
 
 
-def db_upload_anime(itm, bar):
+def db_upload_anime(itm, bar, updated):
     soup = get_html(itm["link"])
 
     bar.next()
@@ -100,6 +118,7 @@ def db_upload_anime(itm, bar):
     bar.next()
 
     if len(episode) != get_all_episode(itm["name"], itm["saison"]):
+        updated.append(itm["name"])
         # print("passed : ", itm["name"])
         desc = soup.find("div", {"class": "slide-desc"}).text
         anime = get_anime_by_name(itm["name"], itm["saison"])
@@ -171,6 +190,7 @@ if __name__ == '__main__':
                            help='The output file of the page that will be analyzed, if it is not specified, the output will be on the command line')
     my_parser.add_argument('-a', '--alwaysup', help="run prgram, every hours", action="store_true")
     my_parser.add_argument('-t', '--time', type=int, metavar='time', help="every X hours program run. Default 1 hour")
+    my_parser.add_argument('-v', '--verbose', help="verbose mode", action="store_true")
     args = my_parser.parse_args()
     nb_page = args.nbpage
     page = args.page
@@ -197,25 +217,24 @@ if __name__ == '__main__':
         exit()
 
     if nb_page is None:
-        print("usage: vostree_scrap_new [-h] [-n nbpage [-f/--force] [-a [-t hour]]] [-p page_link [-o output]]")
+        print("usage: vostree_scrap_new [-h] [-n nbpage [-f] [-a [-t hour]] [-v]] [-p page_link [-o output]]")
         print("vostree_scrap_new: error: the following arguments are required: -n/--nbpage or -p/--page")
         exit()
 
     mydb = mysql.connector.connect(
-        host="<HOST>",
-        port=<PORT>,
-        user="<USER>",
-        password="<USER_PWD>",
-        database="<SCHEMA>"
+        host="localhost",
+        port=11448,
+        user="maxim",
+        password="6c*MGtxivnP&F2n@3dCur!Sydt86hn",
+        database="anime"
     )
-    mydb = mysql.connector.connect(
-
+    cursor = mydb.cursor()
     while True:
+        updated = []
         print(f"pages that will be analyzed: {nb_page}")
         if args.force:
             print(f"force mode activated")
         for x in range(1, nb_page + 1):
-            anime_update = 0
             dico = []
 
             soup = get_html(f"https://vostfree.com/last-episode.html/page/{x}/")
@@ -258,20 +277,23 @@ if __name__ == '__main__':
             for item in dico:
                 anime = get_all_episode(item["name"], item["saison"])
                 if (anime is False) or (anime != item["episode"]) or args.force:
-                    anime_update += 1
-                    db_upload_anime(item, bar)
+                    db_upload_anime(item, bar, updated)
                 else:
                     for i in range(7):
                         bar.next()
             bar.next()
             bar.finish()
-            if always:
-                print("\n")
-                with IncrementalBar('Next scan : ', max=hour*60) as bar:
-                    for i in range(hour*60):
-                        # Do some work
-                        bar.next()
-                        time.sleep(60)
-                print("\n")
-            else:
-                exit()
+        if args.verbose:
+            print(f"\n {len(updated)} anime we have been updated : ")
+            for i in updated:
+                print(i)
+        if always:
+            print("\n")
+            for i in range(hour*60*60):
+                # Do some work
+                print('\r {}'.format(sec_to_hours((hour*60*60)-i)), end='')
+                time.sleep(1)
+            clear()
+        else:
+            exit()
+
