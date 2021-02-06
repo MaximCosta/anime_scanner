@@ -124,6 +124,9 @@ def db_upload_anime(itm, bar, updated):
         anime = get_anime_by_name(itm["name"], itm["saison"])
 
         bar.next()
+        
+        if not "vostfree.io" in itm["image"]:
+            itm["image"] = "https://vostfree.io" + itm["image"]
 
         if not len(anime):
             sql = "INSERT INTO anime (anime.name, anime.image, anime.duree, anime.saison, anime.desc, anime.categorie_lang_id) VALUES (%s, %s, %s, %s, %s, %s);"
